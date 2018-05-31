@@ -1,0 +1,36 @@
+version: '2'
+
+services:
+
+  gerrit-server:
+    depends_on:
+     - gerrit-mysql
+    container_name: gerrit-server
+    image: <<ubunut with java>>
+    hostname: gerrit-server
+    restart: always
+    volumes:
+     - /path/to/gerrit/gerrit-server:/opt/gerrit
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
+    ports:
+     - 8080:8080
+     - 29418:29418
+    tty: true
+
+
+  gerrit-mysql:
+    container_name: gerrit-mysql
+    image: mysql:5.5
+    hostname: gerrit-mysql
+    restart: always
+    environment:
+     - MYSQL_ROOT_PASSWORD=secret
+     - MYSQL_DATABASE=gerritdb
+     - MYSQL_USER=gerrituser
+     - MYSQL_PASSWORD=gerritpass
+    volumes:
+     - /path/to/gerrit/mysql-data:/var/lib/mysql:rw
+     - /etc/localtime:/etc/localtime:ro
+     - /etc/timezone:/etc/timezone:ro
+    tty: true

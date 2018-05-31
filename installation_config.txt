@@ -16,16 +16,48 @@ download gerrit from :: https://gerrit-releases.storage.googleapis.com/index.htm
 5) use 'y' for all plugings, so that it will installed in gerrit server
 
 
+######################################
+basic configuration for all project ::
+######################################
+Create one group for all developers ::
+project >> people >> create new group >> add users
+
+make authentication for all push and pull process ::
+project >> all project >> access >> Reference: 	refs/* >> deny for Anonymous Users
+
+disable the change ID requirement :: 
+project >> all project >> general >> Require Change-Id in commit message: false
+
+specify the ACL ::
+project >> all project >> access >> Reference: 	refs/heads/* >>
+    1) push deny
+    2) read <group-name>
+    3) Label Code-Review <group-name>
+    4) Label Verified <group-name>
+    5) View Drafts <group-name>
+    6) Publish Drafts <group-name>
+    7) Edit Topic Name <group-name>
+
+project >> all project >> access >> Reference: 	refs/for/refs/* >>
+    1) Push <group-name>
+    2) Push Merge Commit <group-name>
+
 #############################
 pushing code ::
 #############################
+project >> all project >> general >> Require Change-Id in commit message: false
+project >> all project >> access >> Reference: 	refs/heads/* >> push deny
+
 
 git add README.md 
 git commit -m "updated with README.md"
-gitdir=$(git rev-parse --git-dir); scp -p -P 29418 akhil@172.17.0.2:hooks/commit-msg ${gitdir}/hooks/
-## ssh pub key should be added in gerrit web UI
-git commit --amend
 git push origin HEAD:refs/for/master
+
+### If all project is not configured, then run thses two commands before pushing for getting commit ID
+## ssh pub key should be added in gerrit web UI
+## gitdir=$(git rev-parse --git-dir); scp -p -P 29418 akhil@172.17.0.2:hooks/commit-msg ${gitdir}/hooks/
+## git commit --amend
+
 
 
 #############################

@@ -19,3 +19,6 @@ https://www.hiroom2.com/2017/04/27/gerrit-delete-project-with-delete-project-plu
 replication ::
 https://stackoverflow.com/questions/37861001/integrate-gerrit-with-gitlab
 https://stackoverflow.com/questions/39956030/gerrit-replication-to-gitlab-failed
+
+Gerrit Access Rights Policies ::
+https://github.com/midonet/midonet/wiki/Gerrit-Access-Rights-Policies
