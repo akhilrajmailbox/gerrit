@@ -1,0 +1,93 @@
+#############################
+Installation ::
+#############################
+
+link :: https://gerrit-review.googlesource.com/Documentation/install.html 
+
+JRE, minimum version 1.8 need to install
+
+
+download gerrit from :: https://gerrit-releases.storage.googleapis.com/index.html
+
+1) java -jar gerrit-2.14.8.war init -d /opt/gerritdata
+2) choose database MySQL (MySQL Version should be 5.5)
+3) Authentication method & Git/HTTP authentication can use LDAP
+4) Canonical URL need to change with domain name or public ipaddress
+5) use 'y' for all plugings, so that it will installed in gerrit server
+
+
+#############################
+pushing code ::
+#############################
+
+git add README.md 
+git commit -m "updated with README.md"
+gitdir=$(git rev-parse --git-dir); scp -p -P 29418 akhil@172.17.0.2:hooks/commit-msg ${gitdir}/hooks/
+## ssh pub key should be added in gerrit web UI
+git commit --amend
+git push origin HEAD:refs/for/master
+
+
+#############################
+merging, commiting the code ::
+#############################
+
+make authentication for all push and pull process ::
+project >> all project >> access >> Reference: 	refs/* >> deny for Anonymous Users
+
+grant permission for all developers for push 
+people >> list group >> Administrators >> add the developer users
+
+grant permission for merging >>
+project >> projectname >> access >> Reference: 	refs/head/* >> add these to one user who want to be admin {Submit,Label Verified,Label Code-Review,Push Merge Commit, Push, Read}
+
+grant permission for reading etc..>>
+project >> projectname >> access >> Reference: 	refs/head/* >> read
+
+
+#############################
+replication from gerrit to gitLab or other repository server ::
+#############################
+
+create the initial repository link :: https://stackoverflow.com/questions/37861001/integrate-gerrit-with-gitlab
+configure in gerrit link :: https://stackoverflow.com/questions/39956030/gerrit-replication-to-gitlab-failed
+
+
+create the initial repository
+1. create your repository on gitlab.
+2. git clone --mirror <gitlab repo url>
+3. create project on gerrit.
+4. git push --mirror <gerrit_project_url>
+5. configure gerrit replication plugin, this will replicate your all the changes to gitlab.
+
+
+create one ssh key for the user which is used for running the gerrit and add the pub key to remote repository server
+
+nano gerritdata/etc/replication.config
+
+[remote "gerrittest"]
+  projects = gerrittest
+  url = git@test.example.com:akhil/gerrittest.git
+  push = +refs/heads/*:refs/heads/*
+  push = +refs/tags/*:refs/tags/*
+  push = +refs/changes/*:refs/changes/*
+  threads = 3
+
+
+nano ~/.ssh/config
+
+Host test.example.com
+    HostName test.example.com
+    User git
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+
+./{gerrit_home}/bin/gerrit.sh restart
+
+tailf {gerrit_home}/logs/replication_log
+#############################
+
+
+
